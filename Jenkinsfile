@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHON = 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\python3.13.exe'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -10,20 +14,20 @@ pipeline {
 
         stage('Check Python') {
             steps {
-                bat 'python --version'
+                bat '"%PYTHON%" --version'
             }
         }
 
         stage('Install ML Dependencies') {
             steps {
-                bat 'python -m pip install --upgrade pip'
-                bat 'python -m pip install pandas numpy scikit-learn'
+                bat '"%PYTHON%" -m pip install --upgrade pip'
+                bat '"%PYTHON%" -m pip install pandas numpy scikit-learn'
             }
         }
 
         stage('Test ResumeIQ Setup') {
             steps {
-                bat 'python src/test_setup.py'
+                bat '"%PYTHON%" src\\test_setup.py'
             }
         }
     }
