@@ -20,3 +20,14 @@ resumes/
 *.docx
 *.doc
 .vscode/
+
+
+# Generated ML model artifacts
+models/
+
+# Local debugging and inspection scripts
+src/debug_*.py
+src/inspect_*.py
+src/check_*.py
+src/count_resumes.py
+src/repair_empty_records.py

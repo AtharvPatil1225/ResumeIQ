@@ -36,24 +36,51 @@ SKILLS = [
 
 
 
+
 def extract_skills(text):
     """Detect known skills using whole-term matching."""
     found_skills = []
 
     for skill in sorted(SKILLS, key=len, reverse=True):
-        pattern = r"(?<!\w)" + re.escape(skill) + r"(?!\w)"
-
-        # C is a single-letter skill, so match uppercase C only.
-        # Case-insensitive matching would also match ordinary lowercase c.
+        # Match the skill as a whole term.
         if skill == "C":
-            matched = re.search(pattern, text)
+            # Prevent C from matching inside C++, C#, etc.
+            pattern = r"(?<![\w+#])C(?![\w+#])"
+
+            for matched in re.finditer(pattern, text, re.IGNORECASE):
+                start = matched.start()
+                end = matched.end()
+
+                # Check the words immediately around C.
+                before = text[max(0, start - 40):start]
+                after = text[end:min(len(text), end + 20)]
+
+                # Ignore a C that clearly refers to a grade.
+                if re.search(r"\bgrade\s*$", before, re.IGNORECASE):
+                    continue
+
+                # Require programming-related context nearby.
+                context = before + " " + after
+
+                if re.search(
+                    r"\b(programming|programmer|language|languages|"
+                    r"proficient|proficiency|skills?|developer|"
+                    r"developed|coding|coded|using|use|know|knows|"
+                    r"learned|learning|experience|experienced)\b",
+                    context,
+                    re.IGNORECASE,
+                ):
+                    found_skills.append("C")
+                    break
+
         else:
-            matched = re.search(pattern, text, re.IGNORECASE)
+            pattern = r"(?<!\w)" + re.escape(skill) + r"(?!\w)"
 
-        if matched:
-            found_skills.append(skill)
+            if re.search(pattern, text, re.IGNORECASE):
+                found_skills.append(skill)
 
-    return sorted(found_skills)
+    return sorted(set(found_skills))
+
 
 
 
