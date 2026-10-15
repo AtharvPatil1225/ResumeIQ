@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -18,26 +19,32 @@ pipeline {
             }
         }
 
-        stage('Install ML Dependencies') {
+        stage('Install Dependencies') {
             steps {
-                bat '"%PYTHON%" -m pip install --upgrade pip'
-                bat '"%PYTHON%" -m pip install pandas numpy scikit-learn'
+                bat '"%PYTHON%" -m pip install pandas numpy scikit-learn joblib pymupdf pytest'
             }
         }
 
-        stage('Test ResumeIQ Setup') {
+        stage('Verify ML Environment') {
             steps {
                 bat '"%PYTHON%" src\\test_setup.py'
+            }
+        }
+
+        stage('Run Automated Tests') {
+            steps {
+                bat 'set "PYTHONPATH=%WORKSPACE%\\src"&& "%PYTHON%" -m pytest -v src\\test_matching_engine.py src\\test_skill_extractor.py src\\test_folder_inspection.py'
             }
         }
     }
 
     post {
         success {
-            echo 'ResumeIQ CI pipeline completed successfully!'
+            echo 'ResumeIQ CI completed: dependencies and automated tests passed.'
         }
+
         failure {
-            echo 'ResumeIQ CI pipeline failed. Check the stage logs.'
+            echo 'ResumeIQ CI failed. Check the console output for the failing stage.'
         }
     }
 }
