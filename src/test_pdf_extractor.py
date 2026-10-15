@@ -1,24 +1,24 @@
+import pymupdf
 
-from pathlib import Path
-from pdf_extractor import extract_text_from_pdf
+from pdf_extractor import extract_text_from_pdf, inspect_pdf_folder
 
-# Select one PDF from the 2026 folder
-resume_folder = Path(r"E:\ResumeIQ\data\raw_resumes\2026")
-pdf_files = list(resume_folder.glob("*.pdf"))
 
-if not pdf_files:
-    print("No PDF files found.")
-else:
-    pdf_path = pdf_files[0]
-    extracted_text = extract_text_from_pdf(pdf_path)
+def test_extract_text_from_generated_pdf(tmp_path):
+    pdf_path = tmp_path / "sample.pdf"
+    document = pymupdf.open()
+    page = document.new_page()
+    page.insert_text((72, 72), "Synthetic PDF extraction fixture")
+    document.save(pdf_path)
+    document.close()
+    assert extract_text_from_pdf(pdf_path) == "Synthetic PDF extraction fixture"
 
-    print("ResumeIQ - PDF Extractor Test")
-    print("PDF found: Yes")
 
-    if extracted_text is None:
-        print("Extraction status: Failed")
-    elif extracted_text:
-        print("Extraction status: Success")
-        print("Extracted character count:", len(extracted_text))
-    else:
-        print("Extraction status: No text found")
+def test_inspect_folder_reports_aggregate_counts(tmp_path):
+    document = pymupdf.open()
+    page = document.new_page()
+    page.insert_text((72, 72), "Synthetic fixture")
+    document.save(tmp_path / "readable.pdf")
+    document.close()
+    (tmp_path / "not-a-pdf.pdf").write_text("invalid", encoding="utf-8")
+    result = inspect_pdf_folder(tmp_path)
+    assert result == {"total": 2, "readable": 1, "empty": 0, "failed": 1}

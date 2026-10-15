@@ -31,3 +31,7 @@ src/inspect_*.py
 src/check_*.py
 src/count_resumes.py
 src/repair_empty_records.py
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/
