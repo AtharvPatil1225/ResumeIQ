@@ -21,19 +21,33 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Verify ML Environment') {
             steps {
-                bat 'python -m pytest -q'
+                bat 'python src\\test_setup.py'
+            }
+        }
+
+        stage('Run Automated Tests') {
+            steps {
+                bat 'python -m pytest -v'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker --version'
+                bat 'docker build -t resumeiq:%BUILD_NUMBER% .'
             }
         }
     }
 
     post {
         success {
-            echo 'ResumeIQ CI pipeline completed successfully!'
+            echo 'ResumeIQ CI pipeline and Docker image build completed successfully.'
         }
+
         failure {
-            echo 'ResumeIQ CI pipeline failed. Check the stage logs.'
+            echo 'ResumeIQ pipeline failed. Check the Console Output for the failing stage.'
         }
     }
 }
