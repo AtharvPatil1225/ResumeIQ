@@ -21,6 +21,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                bat '"%PYTHON%" -m pip install --upgrade pip'
                 bat '"%PYTHON%" -m pip install pandas numpy scikit-learn joblib pymupdf pytest'
             }
         }
@@ -36,15 +37,22 @@ pipeline {
                 bat 'set "PYTHONPATH=%WORKSPACE%\\src"&& "%PYTHON%" -m pytest -v src\\test_matching_engine.py src\\test_skill_extractor.py src\\test_folder_inspection.py'
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker --version'
+                bat 'docker build -t resumeiq:%BUILD_NUMBER% .'
+            }
+        }
     }
 
     post {
         success {
-            echo 'ResumeIQ CI completed: dependencies and automated tests passed.'
+            echo 'ResumeIQ CI pipeline and Docker image build completed successfully.'
         }
 
         failure {
-            echo 'ResumeIQ CI failed. Check the console output for the failing stage.'
+            echo 'ResumeIQ pipeline failed. Check the Console Output for the failing stage.'
         }
     }
 }
