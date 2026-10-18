@@ -3,7 +3,9 @@ pipeline {
     agent any
 
     environment {
-        PYTHON = 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\python3.13.exe'
+        // Override PYTHON in your Jenkins node configuration or leave as
+        // the system default.  Do NOT hardcode a machine-specific path here.
+        PYTHON = "${env.PYTHON ?: 'python'}"
     }
 
     stages {
@@ -22,7 +24,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat '"%PYTHON%" -m pip install --upgrade pip'
-                bat '"%PYTHON%" -m pip install pandas numpy scikit-learn joblib pymupdf pytest'
+                bat '"%PYTHON%" -m pip install -r requirements.txt'
             }
         }
 
@@ -34,13 +36,36 @@ pipeline {
 
         stage('Run Automated Tests') {
             steps {
-                bat 'set "PYTHONPATH=%WORKSPACE%\\src"&& "%PYTHON%" -m pytest -v src\\test_matching_engine.py src\\test_skill_extractor.py src\\test_folder_inspection.py'
+                // pytest.ini sets pythonpath = src automatically.
+                // All test files under src/ are discovered automatically.
+                bat '"%PYTHON%" -m pytest -v --tb=short'
+            }
+        }
+
+        stage('Generate Synthetic Training Data') {
+            steps {
+                bat '"%PYTHON%" src\\generate_training_data.py'
+            }
+        }
+
+        stage('Train ML Models') {
+            steps {
+                bat '"%PYTHON%" src\\train_model.py'
             }
         }
 
         stage('Build Docker Image') {
+            when {
+                // Only attempt Docker build when Docker is available on the agent.
+                expression {
+                    try {
+                        bat(script: 'docker --version', returnStatus: true) == 0
+                    } catch (ignored) {
+                        false
+                    }
+                }
+            }
             steps {
-                bat 'docker --version'
                 bat 'docker build -t resumeiq:%BUILD_NUMBER% .'
             }
         }
@@ -48,11 +73,10 @@ pipeline {
 
     post {
         success {
-            echo 'ResumeIQ CI pipeline and Docker image build completed successfully.'
+            echo 'ResumeIQ CI pipeline completed successfully.'
         }
-
         failure {
-            echo 'ResumeIQ pipeline failed. Check the Console Output for the failing stage.'
+            echo 'ResumeIQ pipeline failed. Check the Console Output for details.'
         }
     }
 }

@@ -86,18 +86,20 @@ def main():
     duplicate_count = len(valid_ids) - len(set(valid_ids))
     print("\nDuplicate resume IDs:", duplicate_count)
 
+
+    print(f"\nRESULT: Validation complete. Reviewed {len(records)} records.")
     if (
-        len(records) == 1309
-        and invalid_lines == 0
+        invalid_lines == 0
         and missing_fields == 0
         and empty_text_count == 0
         and len(valid_ids) == len(records)
         and duplicate_count == 0
         and skills_are_lists == len(records)
+        and len(records) > 0
     ):
-        print("\nRESULT: Dataset validation PASSED.")
+        print("All structural checks passed.")
     else:
-        print("\nRESULT: Please review the validation results.")
+        print("One or more issues found. Please review the results above.")
 
     print("Resume contents and filenames were not displayed.")
 

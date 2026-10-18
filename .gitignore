@@ -25,9 +25,19 @@ resumes/
 # Generated ML model artifacts
 models/
 
+# Generated reports (confusion matrix PNGs, etc.)
+reports/
+
+# Pytest cache
+.pytest_cache/
+
 # Local debugging and inspection scripts
 src/debug_*.py
 src/inspect_*.py
 src/check_*.py
 src/count_resumes.py
 src/repair_empty_records.py
+
+# Temporary files
+*.tmp
+*.bak

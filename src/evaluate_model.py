@@ -16,7 +16,7 @@ from sklearn.pipeline import Pipeline
 def main():
     project_folder = Path(__file__).resolve().parent.parent
     dataset_path = (
-        project_folder / "data" / "training" / "resume_job_pairs.csv"
+        project_folder / "data" / "training" / "resume_job_pairs_expanded.csv"
     )
 
     df = pd.read_csv(dataset_path)
