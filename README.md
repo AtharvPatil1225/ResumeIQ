@@ -190,7 +190,7 @@ streamlit run src/app.py
 
 The application opens in your browser at `http://localhost:8501`.
 
-Three tabs are available:
+Four tabs are available, including Section Analysis for per-section evidence and scoring:
 - **Resume Analysis** — upload a PDF, see extracted text and detected skills
 - **Job Matching** — paste a job description and view match scores
 - **Skill Gap** — compare your skills against a job description
@@ -271,6 +271,23 @@ Do not hardcode machine-specific Windows Store paths.
 6. **Similarity ≠ hiring probability** — all scores are experimental metrics.
 
 ---
+
+## Section-aware scoring
+
+The Streamlit app includes a fourth **Section Analysis** tab. It reports
+separate, explainable scores for technical skills, projects, internship/work
+experience, certifications, and education/coursework. Default weights are
+35%, 25%, 20%, 10%, and 10%, respectively. Missing sections are excluded and
+the remaining weights are proportionally normalized, so a fresher's projects
+can contribute without an internship section.
+
+Required skills receive twice the within-section weight of preferred skills.
+Skill evidence is attributed to its first relevant section to avoid counting
+the same coverage evidence more than once; TF-IDF text similarity remains a
+separate relevance measure. These scores are experimental matching measures,
+not hiring probabilities.
+
+See [docs/AUDIT_REPORT.md](docs/AUDIT_REPORT.md) for the verified scope and limitations.
 
 ## Project Status
 
