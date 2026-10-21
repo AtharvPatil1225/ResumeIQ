@@ -1,5 +1,10 @@
+
 pipeline {
     agent any
+
+    environment {
+        PYTHON = 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\python3.13.exe'
+    }
 
     stages {
         stage('Checkout') {
@@ -10,26 +15,26 @@ pipeline {
 
         stage('Check Python') {
             steps {
-                bat 'python --version'
+                bat '"%PYTHON%" --version'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                bat 'python -m pip install --upgrade pip'
-                bat 'python -m pip install -r requirements.txt'
+                bat '"%PYTHON%" -m pip install --upgrade pip'
+                bat '"%PYTHON%" -m pip install -r requirements.txt'
             }
         }
 
         stage('Verify ML Environment') {
             steps {
-                bat 'python src\\test_setup.py'
+                bat '"%PYTHON%" src\\test_setup.py'
             }
         }
 
         stage('Run Automated Tests') {
             steps {
-                bat 'python -m pytest -v'
+                bat '"%PYTHON%" -m pytest -v'
             }
         }
 
