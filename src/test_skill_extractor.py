@@ -1,6 +1,7 @@
-from skill_extractor import extract_skills
+from skill_extractor import extract_skills, SKILLS
 
 
+# --- Original test cases (preserved exactly) ---
 test_cases = [
     ("I know C and C++.", {"C", "C++"}),
     ("I received a grade C in the exam.", set()),
@@ -31,3 +32,64 @@ def test_extract_skills():
             f"\nExpected: {sorted(expected)}"
             f"\nActual: {sorted(actual)}"
         )
+
+
+def test_ml_skills_detected():
+    text = "Worked with TensorFlow, PyTorch, and Scikit-learn for ML projects."
+    skills = set(extract_skills(text))
+    assert "TensorFlow" in skills
+    assert "PyTorch" in skills
+    assert "Scikit-learn" in skills
+
+
+def test_cloud_devops_detected():
+    text = "Deployed services on AWS and Azure using Docker and Kubernetes."
+    skills = set(extract_skills(text))
+    assert "AWS" in skills
+    assert "Azure" in skills
+    assert "Docker" in skills
+    assert "Kubernetes" in skills
+
+
+def test_database_skills_detected():
+    text = "Used PostgreSQL, MongoDB, and Redis in production."
+    skills = set(extract_skills(text))
+    assert "PostgreSQL" in skills
+    assert "MongoDB" in skills
+    assert "Redis" in skills
+
+
+def test_web_framework_skills_detected():
+    text = "Built APIs with Flask and FastAPI, frontend with React and Angular."
+    skills = set(extract_skills(text))
+    assert "Flask" in skills
+    assert "FastAPI" in skills
+    assert "React" in skills
+    assert "Angular" in skills
+
+
+def test_data_skills_detected():
+    text = "Data analysis using Pandas, NumPy, and Matplotlib."
+    skills = set(extract_skills(text))
+    assert "Pandas" in skills
+    assert "NumPy" in skills
+    assert "Matplotlib" in skills
+
+
+def test_no_duplicate_skills():
+    text = "Python Python Python SQL SQL"
+    skills = extract_skills(text)
+    assert skills == sorted(set(skills))
+
+
+def test_skills_list_has_no_internal_duplicates():
+    seen = set()
+    for skill in SKILLS:
+        lower = skill.lower()
+        assert lower not in seen, f"Duplicate skill in taxonomy: {skill!r}"
+        seen.add(lower)
+
+
+def test_empty_text_returns_empty_list():
+    assert extract_skills("") == []
+    assert extract_skills("   ") == []

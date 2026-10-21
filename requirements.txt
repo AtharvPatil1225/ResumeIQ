@@ -1,9 +1,24 @@
-pandas
-numpy
-scikit-learn
-joblib
-PyMuPDF
-pytest
+# ResumeIQ Python Dependencies
+
+# Core data science
+numpy>=1.24
+pandas>=1.5
+
+# Machine learning
+scikit-learn>=1.3
+joblib>=1.3
+
+# PDF text extraction
+PyMuPDF>=1.23
+
+# Web application interfaces
 fastapi
 uvicorn[standard]
 python-multipart
+streamlit>=1.30
+
+# Testing
+pytest>=7.4
+
+# Optional: confusion matrix image export
+matplotlib>=3.7
